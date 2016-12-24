@@ -18,8 +18,8 @@
                    projectFiles="false">
       <itemPath>Makefile</itemPath>
     </logicalFolder>
-    <itemPath>../ebu.hex</itemPath>
     <itemPath>fase3.asm</itemPath>
+    <itemPath>ebu.hex</itemPath>
   </logicalFolder>
   <sourceRootList>
     <Elem>..</Elem>
