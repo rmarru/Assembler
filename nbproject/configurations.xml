@@ -19,7 +19,7 @@
       <itemPath>Makefile</itemPath>
     </logicalFolder>
     <itemPath>../ebu.hex</itemPath>
-    <itemPath>../fase3.asm</itemPath>
+    <itemPath>fase3.asm</itemPath>
   </logicalFolder>
   <sourceRootList>
     <Elem>..</Elem>
