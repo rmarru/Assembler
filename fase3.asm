@@ -15,11 +15,9 @@
 PIXEL_L		EQU 0x00
 PIXEL_H		EQU 0x01
 LINIA_L		EQU 0x02
-LINIA_H		EQU 0x03
-MAX_PIXEL_L	EQU 0x04
-MAX_PIXEL_H	EQU 0x05	
-MAX_LINIA_L	EQU 0x06
-MAX_LINIA_H	EQU 0x07
+LINIA_H		EQU 0x03	
+MAX_LINIA_L	EQU 0x04
+MAX_LINIA_H	EQU 0x05
 		
 
 
@@ -48,9 +46,51 @@ LOW_INT_VECTOR
 ;***********************************
 HIGH_INT
 	;codi de interrupció
+	bsf LATE, 0, 0	    ;Contar la duració
+	bsf LATE, 1, 0
+	tstfsz LINIA_H, 0
+	    goto HIGH_INT_CONTINUE
+	movlw 0x02    
+	cpfseq LINIA_L, 0
+	    goto HIGH_INT_CONTINUE
+	bcf LATE, 1, 0    
+	    
+HIGH_INT_CONTINUE	
+	movlw 0xC3
+	movwf TMR0L, 0
+	movlw 0xFE
+	movwf TMR0H, 0
 	bcf INTCON, TMR0IF, 0
+	clrf PIXEL_L, 0		    
+	clrf PIXEL_H, 0
+	
+	movf MAX_LINIA_H, 0, 0
+	cpfseq LINIA_H, 0
+	    goto INC_LINIA_H
+	movf MAX_LINIA_L, 0, 0    
+	cpfseq LINIA_L, 0
+	    goto INC_LINIA_L
+	    
+	clrf LINIA_H, 0  
+	clrf LINIA_L, 0
+	
+	bcf LATE, 0, 0	
 	retfie	FAST
-
+	
+INC_LINIA_H
+	movlw 0xFF
+	cpfseq LINIA_L, 0
+	    goto INC_LINIA_L
+	clrf LINIA_L, 0
+	incf LINIA_H, 1, 0
+	bcf LATE, 0, 0	
+	retfie FAST
+	
+INC_LINIA_L
+	incf LINIA_L, 1, 0
+	bcf LATE, 0, 0	
+	retfie FAST
+	
 LOW_INT
 	;codi de interrupció
 	retfie	FAST
@@ -87,18 +127,14 @@ LOOP
 	goto LOOP
 	
 INIT_VARS
-	clrf PIXEL_L, 0		
+	clrf PIXEL_L, 0		;No se si fa falta
 	clrf PIXEL_H, 0		
-	clrf LINIA_L, 0		
-	clrf LINIA_H, 0		
-	movlw 0x20
-	movwf MAX_PIXEL_L, 0
-	movlw 0x03
-	movwf MAX_PIXEL_H, 0
 	movlw 0x0D
 	movwf MAX_LINIA_L, 0
+	movwf LINIA_L, 0		
 	movlw 0x02
 	movwf MAX_LINIA_H, 0
+	movwf LINIA_H, 0	
 	return
 	
 INIT_INTS
