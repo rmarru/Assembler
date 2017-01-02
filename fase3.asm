@@ -132,21 +132,6 @@ LOW_INT
 ;****************************
 ;* MAIN I RESTA DE FUNCIONS *
 ;****************************
-
-;********
-;* MAIN *
-;********
-
-MAIN
-	; Inicialització dels ports i configuració
-	;clrf TRISB			; tots els bits sel port B, sortida
-	call INIT_VARS
-	call INIT_INTS
-	call INIT_PORTS
-		
-LOOP
-	
-	goto LOOP
 	
 INIT_VARS
 	clrf PIXEL_L, 0		;No se si fa falta
@@ -179,12 +164,58 @@ INIT_PORTS
 	movlw 0x0F
 	movwf ADCON1, 0
 	clrf TRISB, 0
-	movlw 0x3F
-	movwf TRISD, 0
+	;movlw 0x3F
+	;movwf TRISD, 0
 	movlw 0x08
 	movwf TRISE, 0
 	return
 
+;********
+;* MAIN *
+;********
+	ORG 0x0000CE
+MAIN
+	; Inicialització dels ports i configuració
+	;clrf TRISB			; tots els bits sel port B, sortida
+	call INIT_VARS
+	call INIT_INTS
+	call INIT_PORTS
+		
+LOOP
+	call DEU_NOPS					;2
+	call DEU_NOPS					;2
+	call DEU_NOPS					;2
+	movlw 0x02
+	movwf LATA, 0
+	call DEU_NOPS					;2
+	call DEU_NOPS					;2
+	call DEU_NOPS					;2
+	movlw 0x01
+	movwf LATA, 0
+	call DEU_NOPS					;2
+	call DEU_NOPS					;2
+	call DEU_NOPS					;2
+	clrf LATA, 0
+	call DEU_NOPS					;2
+	call DEU_NOPS					;2
+	call DEU_NOPS					;2
+	call DEU_NOPS					;2
+	call DEU_NOPS					;2
+	call DEU_NOPS					;2
+	call DEU_NOPS					;2
+	call DEU_NOPS					;2
+	call DEU_NOPS					;2
+	call DEU_NOPS					;2
+	call DEU_NOPS					;2
+	call DEU_NOPS					;2
+	call DEU_NOPS					;2
+	call DEU_NOPS					;2
+	call DEU_NOPS					;2
+	call DEU_NOPS					;2
+	NOP
+	goto LOOP
+	
+	
 ;*******
 ;* END *
 ;*******
