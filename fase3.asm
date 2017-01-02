@@ -12,10 +12,10 @@
 ;* VARIABLES *
 ;*************
 
-PIXEL_L		EQU 0x00
-PIXEL_H		EQU 0x01
-LINIA_L		EQU 0x02
-LINIA_H		EQU 0x03	
+LINIA_L		EQU 0x00
+LINIA_H		EQU 0x01
+PIXEL_L		EQU 0x02
+PIXEL_H		EQU 0x03	
 MAX_LINIA_L	EQU 0x04
 MAX_LINIA_H	EQU 0x05
 		
@@ -46,50 +46,72 @@ LOW_INT_VECTOR
 ;***********************************
 HIGH_INT
 	;codi de interrupció
-	bsf LATE, 0, 0	    ;Contar la duració
-	bsf LATE, 1, 0
-	tstfsz LINIA_H, 0
-	    goto HIGH_INT_CONTINUE
-	movlw 0x02    
-	cpfseq LINIA_L, 0
-	    goto HIGH_INT_CONTINUE
-	bcf LATE, 1, 0    
+	bsf LATE, 0, 0					;1
+	tstfsz LINIA_H, 0				;1 (2 o 3)
+	    goto CINC_NOPS				;2  
+	movlw 0x01					;1
+	cpfsgt LINIA_L, 0				;1 (2 o 3)
+	    goto ACTIVATE_VSYNC				;2  		   
+	bcf LATE, 1, 0					;1
+	goto HIGH_INT_CONTINUE				;2
+	
+CINC_NOPS	
+	NOP						;1
+	NOP						;1
+	NOP						;1
+	goto HIGH_INT_CONTINUE				;2  
+	
+ACTIVATE_VSYNC
+	bsf LATE, 1, 0					;1
+	NOP						;1
 	    
 HIGH_INT_CONTINUE	
-	movlw 0xC3
-	movwf TMR0L, 0
-	movlw 0xFE
-	movwf TMR0H, 0
-	bcf INTCON, TMR0IF, 0
-	clrf PIXEL_L, 0		    
-	clrf PIXEL_H, 0
+	movlw 0xC3					;1
+	movwf TMR0L, 0					;1
+	movlw 0xFE					;1
+	movwf TMR0H, 0					;1
+	bcf INTCON, TMR0IF, 0				;1
+	clrf PIXEL_L, 0					;1
+	clrf PIXEL_H, 0					;1
 	
-	movf MAX_LINIA_H, 0, 0
-	cpfseq LINIA_H, 0
-	    goto INC_LINIA_H
-	movf MAX_LINIA_L, 0, 0    
-	cpfseq LINIA_L, 0
-	    goto INC_LINIA_L
+	movf MAX_LINIA_H, 0, 0				;1
+	cpfseq LINIA_H, 0				;1 (2 o 3)
+	    goto INC_LINIA_H				;2
+	call DEU_NOPS					;2  
+	NOP						;1
+	movf MAX_LINIA_L, 0, 0				;1
+	cpfseq LINIA_L, 0				;1 (2 o 3)
+	    goto INC_LINIA_L				;2
 	    
-	clrf LINIA_H, 0  
-	clrf LINIA_L, 0
+	clrf LINIA_H, 0					;1
+	clrf LINIA_L, 0					;1
 	
-	bcf LATE, 0, 0	
-	retfie	FAST
+	bcf LATE, 0, 0					;1
+	retfie	FAST					;2
 	
 INC_LINIA_H
-	movlw 0xFF
-	cpfseq LINIA_L, 0
-	    goto INC_LINIA_L
-	clrf LINIA_L, 0
-	incf LINIA_H, 1, 0
-	bcf LATE, 0, 0	
-	retfie FAST
+	call DEU_NOPS					;2
+	movlw 0xFF					;1
+	cpfseq LINIA_L, 0				;1 (2 o 3)
+	    goto INC_LINIA_L				;2
+	clrf LINIA_L, 0					;1
+	incf LINIA_H, 1, 0				;1
+	bcf LATE, 0, 0					;1
+	retfie FAST					;2
 	
 INC_LINIA_L
-	incf LINIA_L, 1, 0
-	bcf LATE, 0, 0	
-	retfie FAST
+	incf LINIA_L, 1, 0				;1
+	bcf LATE, 0, 0					;1
+	retfie FAST					;2
+	
+DEU_NOPS
+	NOP						;1
+	NOP						;1
+	NOP						;1
+	NOP						;1
+	NOP						;1
+	NOP						;1
+	return						;2
 	
 LOW_INT
 	;codi de interrupció
